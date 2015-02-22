@@ -149,4 +149,4 @@ top15_d
 ## 15         HEAVY RAIN             61964.94
 ```
 ### Conclusion  
-From these data, we found that **tornado** are most harmful to population health, and also have the greatest economic consequences.
+From these data, we found that **tornado** is the most harmful event type to population health, and also have the greatest economic consequences.
