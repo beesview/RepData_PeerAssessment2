@@ -34,7 +34,7 @@ library(R.utils)
 library(ggplot2)
 library(plyr)
 require(gridExtra)
-setwd("C:/Users/jchen.RESPONSYS/Documents")
+setwd("C:/Users/jchen.RESPONSYS/Documents/GitHub/RepData_PeerAssessment2")
 
 ```
 
@@ -95,4 +95,5 @@ names(top15_d)[1] <-"Event Type"
 names(top15_d)[2] <-"Economic Damage (K$)"
 top15_d
 ```
-
+### Conclusion  
+From these data, we found that **tornado** are most harmful to population health, and also have the greatest economic consequences.

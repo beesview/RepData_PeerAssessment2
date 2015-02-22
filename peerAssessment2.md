@@ -8,9 +8,9 @@ by: "James Chen"
 #### Data source: U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database [Storm data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2)
 There is also some documentation of the database available. Here you will find how some of the variables are constructed/defined.
 
-1. National Weather Service Storm Data Documentation
+1. National Weather Service Storm [Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
 
-2. National Climatic Data Center Storm Events FAQ
+2. National Climatic Data Center Storm Events [FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf)
 
 ### Synopsis
 Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.
@@ -22,8 +22,6 @@ This project address following questions:
 1. Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
 
 2. Across the United States, which types of events have the greatest economic consequences?
-
-Consider writing your report as if it were to be read by a government or municipal manager who might be responsible for preparing for severe weather events and will need to prioritize resources for different types of events. However, there is no need to make any specific recommendations in your report.
 
 ### Data Processing
 #### Settings
@@ -37,15 +35,7 @@ library(R.utils)
 library(ggplot2)
 library(plyr)
 require(gridExtra)
-```
-
-```
-## Loading required package: gridExtra
-## Loading required package: grid
-```
-
-```r
-setwd("C:/Users/jchen.RESPONSYS/Documents")
+setwd("C:/Users/jchen.RESPONSYS/Documents/GitHub/RepData_PeerAssessment2")
 ```
 
 #### Download and load data
@@ -67,12 +57,8 @@ storm_0 <- read.csv(bzfile("repdata-data-StormData.csv.bz2"))
 
 ```r
 harm_by_etype <- aggregate( (FATALITIES + INJURIES) ~ EVTYPE, storm_0, sum)
-names(helath_by_etype)[2] = "HarmfulEvent"
+names(harm_by_etype)[2] = "HarmfulEvent"
 rank_by_etype_h <- arrange(harm_by_etype,harm_by_etype$HarmfulEvent,decreasing=T)
-```
-
-```
-## Error in order(harm_by_etype$HarmfulEvent, decreasing = T): argument 1 is not a vector
 ```
 #### what event type cause the greatest economic consequences?
 1. Sum up propertities damages and crop damages
@@ -91,6 +77,16 @@ rank_by_etype_d <- arrange(damage_by_etype,damage_by_etype$EcoDmg,decreasing=T)
 
 ```r
 top15_h <- head(rank_by_etype_h,15)
+hplot<-qplot(EVTYPE,data=top15_h,weight=HarmfulEvent,geom="bar",binwidth = 1)
+hplot<-hplot+ggtitle("Harmful Events by Severe Weather\n Events in the U.S. from 1995 - 2011")
+hplot<-hplot+labs(x="Event Type",y="Harmful Event Count")
+hplot<-hplot+theme(axis.text.x=element_text(angle=45, size=10, vjust=0.5))
+hplot
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
+```r
 names(top15_h)[1] <-"Event Type"
 names(top15_h)[2] <-"Harmful Event Count"
 top15_h
@@ -115,22 +111,20 @@ top15_h
 ## 15          WILDFIRE                 986
 ```
 
-```r
-hplot<-qplot(EVTYPE,data=top15_h,weight=HarmfulEvent,geom="bar",binwidth = 1)
-hplot<-hplot+ggtitle("Harmful Events by Severe Weather\n Events in the U.S. from 1995 - 2011")
-hplot<-hplot+labs(x="Event Type",y="Harmful Event Count")
-hplot<-hplot+theme(axis.text.x=element_text(angle=45, size=10, vjust=0.5))
-hplot
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'HarmfulEvent' not found
-```
-
 #### The event types with the greatest economic consequences:
 
 ```r
 top15_d <- head(rank_by_etype_d,15)
+dplot<-qplot(EVTYPE,data=top15_d,weight=EcoDmg,geom="bar",binwidth = 1)
+dplot<-dplot+ggtitle("Economic Damage by Severe Weather\n Events in the U.S. from 1995 - 2011")
+dplot<-dplot+labs(x="Event Type",y="Economic Damage (in K$)")
+dplot<-dplot+theme(axis.text.x=element_text(angle=45, size=10, vjust=0.5))
+dplot
+```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
+```r
 names(top15_d)[1] <-"Event Type"
 names(top15_d)[2] <-"Economic Damage (K$)"
 top15_d
@@ -154,16 +148,5 @@ top15_d
 ## 14        STRONG WIND             64610.71
 ## 15         HEAVY RAIN             61964.94
 ```
-
-```r
-dplot<-qplot(EVTYPE,data=top15_d,weight=EcoDmg,geom="bar",binwidth = 1)
-dplot<-dplot+ggtitle("Economic Damage by Severe Weather\n Events in the U.S. from 1995 - 2011")
-dplot<-dplot+labs(x="Event Type",y="Economic Damage (in K$)")
-dplot<-dplot+theme(axis.text.x=element_text(angle=45, size=10, vjust=0.5))
-dplot
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'EcoDmg' not found
-```
-
+### Conclusion  
+From these data, we found that **tornado** are most harmful to population health, and also have the greatest economic consequences.
