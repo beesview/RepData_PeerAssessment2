@@ -59,12 +59,38 @@ names(harm_by_etype)[2] = "HarmfulEvent"
 rank_by_etype_h <- arrange(harm_by_etype,harm_by_etype$HarmfulEvent,decreasing=T)
 ```
 #### what event type cause the greatest economic consequences?
-1. Sum up propertities damages and crop damages
-2. Sort the sum of damages in decendent order
-3. List the first 15 of them
+1. Since the unit of PROPDMG and CROPDMG varies from record to record, first rewrite them to thousand dollars unit
+2. Sum up propertities damages and crop damages
+3. Sort the sum of damages in decendent order
+4. List the first 15 of them
 
 ```{r}
-damage_by_etype <- aggregate( (PROPDMG + CROPDMG) ~ EVTYPE, storm_0, sum)
+storm_0$prop <- 0
+storm_0$crop <- 0
+
+storm_0[which(storm_0$PROPDMGEXP %in% (1:9)),]$prop <- 
+  storm_0[which(storm_0$PROPDMGEXP %in% (1:9)),]$PROPDMG / 100;
+storm_0[which(toupper(storm_0$PROPDMGEXP) == "H"),]$prop <- 
+    storm_0[which(toupper(storm_0$PROPDMGEXP) == "H"),]$PROPDMG / 10;
+storm_0[which(toupper(storm_0$PROPDMGEXP) == "K"),]$prop <- 
+    storm_0[which(toupper(storm_0$PROPDMGEXP) == "K"),]$PROPDMG;
+storm_0[which(toupper(storm_0$PROPDMGEXP) == "M"),]$prop <- 
+    storm_0[which(toupper(storm_0$PROPDMGEXP) == "M"),]$PROPDMG * 1000;
+storm_0[which(toupper(storm_0$PROPDMGEXP) == "B"),]$prop <- 
+    storm_0[which(toupper(storm_0$PROPDMGEXP) == "B"),]$PROPDMG * 1000000;
+    
+storm_0[which(storm_0$CROPDMGEXP %in% (1:9)),]$crop <- 
+    storm_0[which(storm_0$CROPDMGEXP %in% (1:9)),]$CROPDMG / 100;
+storm_0[which(toupper(storm_0$CROPDMGEXP) == "H"),]$crop <- 
+    storm_0[which(toupper(storm_0$CROPDMGEXP) == "H"),]$CROPDMG / 10;
+storm_0[which(toupper(storm_0$CROPDMGEXP) == "K"),]$crop <- 
+    storm_0[which(toupper(storm_0$CROPDMGEXP) == "K"),]$CROPDMG;
+storm_0[which(toupper(storm_0$CROPDMGEXP) == "M"),]$crop <- 
+    storm_0[which(toupper(storm_0$CROPDMGEXP) == "M"),]$CROPDMG * 1000;
+storm_0[which(toupper(storm_0$CROPDMGEXP) == "B"),]$crop <- 
+    storm_0[which(toupper(storm_0$CROPDMGEXP) == "B"),]$CROPDMG * 1000000;
+
+damage_by_etype <- aggregate( (prop + crop) ~ EVTYPE, storm_0, sum)
 names(damage_by_etype)[2] = "EcoDmg"
 rank_by_etype_d <- arrange(damage_by_etype,damage_by_etype$EcoDmg,decreasing=T)
 ```
@@ -96,4 +122,4 @@ names(top15_d)[2] <-"Economic Damage (K$)"
 top15_d
 ```
 ### Conclusion  
-From these data, we found that **tornado** is the most harmful event type to population health, and also have the greatest economic consequences.
+From these data, we found that **tornado** is the most harmful event type to population health, and **flood** cause the greatest economic consequences.
